@@ -222,18 +222,70 @@ router.get('/numberoftechnician',async(req,res) => {
 router.put('/statusupdate',async(req,res) => {
   const {id} = req.body;  
   try{
-      const StatusUpdate = await Services.findById(id)
-      if(!StatusUpdate){
+      const Status = await Services.findOne({_id:id})
+      if(!Status){
         res.status(404).json({message:'Service not found'})
       }
-      const updatedata = StatusUpdate.status === 'Active'?'Inactive':'Active';
-      StatusUpdate.status = updatedata
-      await StatusUpdate.save();
-      res.status(200).json({StatusUpdate})
+      const newStatus = Status.status === 'Active' ? 'Inactive':'Active'
+      const UpdateStatus = await Services.findOneAndUpdate(
+        {_id:id},
+        {
+          $set:{ status:newStatus}
+        },
+        {new:true}
+      )
+      // const updatedata = StatusUpdate.status === 'Active'?'Inactive':'Active';
+      // StatusUpdate.status = updatedata
+      // await StatusUpdate.save();
+      res.status(200).json({UpdateStatus})
     }
     catch(error){
       res.status(400).json({'error while update status':error})
     }
+})
+
+//deleteing service 
+router.delete('/deleteservice',async(req,res) => {
+  try{
+    const {id} = req.body;
+    const result = await Services.findOneAndDelete({_id:id})
+    if(!result){
+      res.status(400).json({message:'Unable to delete the service'})
+    }
+    res.status(200).json({result})
+  }
+  catch(error){
+    res.status(500).json({error:'error while deleting'})
+  }
+})
+
+//updating users details
+router.put('/updaterequest',async(req,res) => {
+  try{
+    const {id,name,email,phonno,address,pincode} = req.body;
+    const ProfileUpdate = await User.findOneAndUpdate(
+      {_id:id},
+      {
+        $set : {
+          username:name,
+          email:email,
+          address:address,
+          pincode:pincode,
+          phoneNo:phonno
+        }
+      }
+      ,
+      {new : true}
+    )
+    if(!ProfileUpdate){
+      res.status(404).json({message:'Invalid Users'})
+    }
+   
+    res.status(200).json({ProfileUpdate})
+  }
+  catch(error){
+    res.status(404).json({message:'Error Updating details'})
+  }
 })
 // Additional endpoints for updating or deleting users
 // Example: router.put('/api/users/:id', (req, res) => {});

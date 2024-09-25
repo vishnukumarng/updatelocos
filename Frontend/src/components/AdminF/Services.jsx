@@ -40,7 +40,7 @@ export const Services = () => {
         try{
           const response = await axios.get('http://localhost:8088/userRoutes/numberoftechnician')
           setServicerCount([])
-          console.log(response.data)
+          //console.log(response.data)
         }
         catch(error){
           console.log('Error fetching count',error)
@@ -70,12 +70,23 @@ export const Services = () => {
     //updating the Status 
       const handleStatus = async(id) => {
         try{
-          const response = axios.put('http://localhost:8088/userRoutes/statusupdate',{id})
+          const response = await axios.put('http://localhost:8088/userRoutes/statusupdate',{id})
          //fetchService();
-         window.location.reload()
+        window.location.reload()
       }
         catch(error){
           console.log('Error while changing',error)
+      }
+    }
+    //removing service
+    const handleRemoveService = async(id) => {
+      try{
+        alert('Delete the Service')
+        const response = await axios.delete('http://localhost:8088/userRoutes/deleteservice',{data:{id}})
+        window.location.reload();
+      }
+      catch(error){
+        console.log('Error deleting service',error)
       }
     }
     //  // Toggle service status (active/inactive)
@@ -90,9 +101,9 @@ export const Services = () => {
     //   };
     
       // Remove a service
-      const handleRemoveService = (id) => {
-        setServices(services.filter((service) => service.id !== id));
-      };
+      // const handleRemoveService = (id) => {
+      //   setServices(services.filter((service) => service.id !== id));
+      // };
     
       return (
         <div className="services-management">
@@ -141,7 +152,7 @@ export const Services = () => {
                   >
                     {service.status === 'Active' ? 'Deactivate' : 'Activate'}
                   </button>
-                  <button onClick={() => handleRemoveService(service.id)} className="remove">
+                  <button onClick={() => handleRemoveService(service._id)} className="remove">
                     Remove
                   </button>
                 </div>
